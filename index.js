@@ -30,8 +30,14 @@ app.get('/movies', (req, res) => {
 
 // Route for the "/" endpoint
 app.get('/', (req, res) => {
-  res.send('Welcome to my Book Club!');
+  res.send('Welcome to my Movie Club!');
 });
+
+// 404 Error handler for unknown routes
+app.use((req, res) => {
+    res.status(404).send('Page not found!');
+  });
+  
 
 // Error-handling middleware
 app.use((err, req, res, next) => {

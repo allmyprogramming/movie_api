@@ -99,31 +99,35 @@ let movies = [
 
 let users = [];
 
-app.post('/users', req, res) => {
-  const newUser = req.body;
 
-  if (newUser.name)
-}
-
-
-// Get all movies
-app.get("/movies", (req, res) => {
-  res.json(movies);
+// Read movies
+app.get('/movies', (req, res) => {
+  res.status(200).json(movies);
 });
 
+//Read
+app.get('/movies/:title', (req, res), (req, res) => {
+  const { title } = req.params;
+  const movie = movies.find( movie => movie.Title === title);
+
+  if (movie) {
+    res.status(200).json(movie);
+  } else {
+    res.status(400).send('no such movie')
+  }
+
+});
 
 // Get genre description by name
 app.get("/movies/genre/:genreName", (req, res) => {
   const { genreName } = req.params;
-  const genre = movies.find( movie => movie.genre.Name === genreName ).genre;
+  const genre = movies.find( movie => movie.genre.name === genreName ).genre;
   if (genre) {
     res.status(200).json(genre);
   } else { res.status(400).send("Genre not found");
+  }
 });
 
 
-const PORT = 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+app.listen(8080, () => console.log("listening on 8080"));
 

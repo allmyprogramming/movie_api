@@ -1,6 +1,7 @@
-// Import necessary modules
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+    bodyParser = require("body-parser");
+    uuid = require("uuid");
+    morgan = require('morgan');
 
 // Initialize Express
 const app = express();
@@ -8,45 +9,121 @@ const app = express();
 // Use Morgan middleware for logging requests
 app.use(morgan('common'));
 
-// Serve static files (like documentation.html) from the "public" folder
-app.use(express.static('public'));
+app.use(bodyParser.json());
 
-// Route for the "/movies" endpoint
-app.get('/movies', (req, res) => {
-  const topMovies = [
-    { title: 'Inception', year: 2010 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: 'Interstellar', year: 2014 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Pulp Fiction', year: 1994 },
-    { title: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'Fight Club', year: 1999 },
-  ];
-  res.json(topMovies); // Send the movies as JSON
+let movies = [
+  {
+
+    title: "Inception",
+    description: "A thief who enters the dreams of others to steal secrets.",
+    genre: { name: "Sci-Fi", description: "Science fiction movies explore futuristic concepts." },
+    director: { name: "Christopher Nolan", bio: "British-American director", birthYear: 1970 },
+    imageUrl: "https://image.url/inception.jpg",
+    featured: true,
+  },
+  {
+
+    title: "The Dark Knight",
+    description: "Batman faces the Joker, who seeks to create chaos in Gotham.",
+    genre: { name: "Action", description: "Action-packed movies with intense sequences." },
+    director: { name: "Christopher Nolan", bio: "British-American director", birthYear: 1970 },
+    imageUrl: "https://image.url/darkknight.jpg",
+    featured: false,
+  },
+  {
+
+    title: "Interstellar",
+    description: "A team of astronauts travels through a wormhole to find a new home for humanity.",
+    genre: { name: "Sci-Fi", description: "Exploring deep space and time travel." },
+    director: { name: "Christopher Nolan", bio: "British-American director", birthYear: 1970 },
+    imageUrl: "https://image.url/interstellar.jpg",
+    featured: true,
+  },
+  {
+    title: "The Matrix",
+    description: "A hacker discovers the truth about his reality and fights against its controllers.",
+    genre: { name: "Sci-Fi", description: "A world where reality is an illusion created by AI." },
+    director: { name: "Lana Wachowski", bio: "American filmmaker and writer", birthYear: 1965 },
+    imageUrl: "https://image.url/matrix.jpg",
+    featured: false,
+  },
+  {
+    title: "Pulp Fiction",
+    description: "A series of interwoven crime stories in Los Angeles.",
+    genre: { name: "Crime", description: "Stories revolving around criminal activities." },
+    director: { name: "Quentin Tarantino", bio: "American filmmaker known for his unique storytelling.", birthYear: 1963 },
+    imageUrl: "https://image.url/pulpfiction.jpg",
+    featured: true,
+  },
+  {
+    title: "The Lord of the Rings: The Fellowship of the Ring",
+    description: "A hobbit embarks on a quest to destroy a powerful ring.",
+    genre: { name: "Fantasy", description: "Epic adventures in magical worlds." },
+    director: { name: "Peter Jackson", bio: "New Zealand filmmaker and director of the LOTR trilogy.", birthYear: 1961 },
+    imageUrl: "https://image.url/lotr.jpg",
+    featured: true,
+  },
+  {
+    title: "The Godfather",
+    description: "The powerful saga of a crime family and its patriarch.",
+    genre: { name: "Crime", description: "Classic crime dramas exploring the mafia underworld." },
+    director: { name: "Francis Ford Coppola", bio: "American director known for The Godfather trilogy.", birthYear: 1939 },
+    imageUrl: "https://image.url/godfather.jpg",
+    featured: true,
+  },
+  {
+    title: "Forrest Gump",
+    description: "A simple man with a big heart experiences key moments in American history.",
+    genre: { name: "Drama", description: "Emotional and character-driven storytelling." },
+    director: { name: "Robert Zemeckis", bio: "American filmmaker known for emotional storytelling.", birthYear: 1952 },
+    imageUrl: "https://image.url/forrestgump.jpg",
+    featured: true,
+  },
+  {
+    title: "The Shawshank Redemption",
+    description: "A man wrongly convicted of murder forms a friendship in prison.",
+    genre: { name: "Drama", description: "Powerful stories of human resilience and hope." },
+    director: { name: "Frank Darabont", bio: "French-American director known for prison dramas.", birthYear: 1959 },
+    imageUrl: "https://image.url/shawshank.jpg",
+    featured: true,
+  },
+  {
+    title: "Fight Club",
+    description: "An insomniac and a soap salesman start an underground fight club.",
+    genre: { name: "Drama", description: "Psychological thrillers that challenge societal norms." },
+    director: { name: "David Fincher", bio: "American filmmaker known for dark and stylish films.", birthYear: 1962 },
+    imageUrl: "https://image.url/fightclub.jpg",
+    featured: false,
+  }
+];
+
+let users = [];
+
+app.post('/users', req, res) => {
+  const newUser = req.body;
+
+  if (newUser.name)
+}
+
+
+// Get all movies
+app.get("/movies", (req, res) => {
+  res.json(movies);
 });
 
-// Route for the "/" endpoint
-app.get('/', (req, res) => {
-  res.send('Welcome to my Movie Club!');
+
+// Get genre description by name
+app.get("/movies/genre/:genreName", (req, res) => {
+  const { genreName } = req.params;
+  const genre = movies.find( movie => movie.genre.Name === genreName ).genre;
+  if (genre) {
+    res.status(200).json(genre);
+  } else { res.status(400).send("Genre not found");
 });
 
-// 404 Error handler for unknown routes
-app.use((req, res) => {
-    res.status(404).send('Page not found!');
-  });
-  
 
-// Error-handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the error
-  res.status(500).send('Something went wrong!');
-});
-
-// Start the server
 const PORT = 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie API Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Movie API Documentation</h1>
+    <p>Base URL: <code>http://localhost:8080</code></p>
+
+    <h2>Endpoints</h2>
+
+    <div class="container">
+        <h3>1. Get All Movies</h3>
+        <p><strong>Method:</strong> GET</p>
+        <p><strong>URL:</strong> <code>/movies</code></p>
+        <p><strong>Description:</strong> Returns a list of all movies.</p>
+    </div>
+
+    <div class="container">
+        <h3>2. Get Movie by Title</h3>
+        <p><strong>Method:</strong> GET</p>
+        <p><strong>URL:</strong> <code>/movies/:title</code></p>
+        <p><strong>Description:</strong> Returns details of a specific movie.</p>
+    </div>
+
+    <div class="container">
+        <h3>3. Get Genre Description</h3>
+        <p><strong>Method:</strong> GET</p>
+        <p><strong>URL:</strong> <code>/movies/genre/:genreName</code></p>
+        <p><strong>Description:</strong> Returns the description of a movie genre.</p>
+    </div>
+
+    <div class="container">
+        <h3>4. Register a New User</h3>
+        <p><strong>Method:</strong> POST</p>
+        <p><strong>URL:</strong> <code>/users</code></p>
+        <p><strong>Body:</strong></p>
+        <pre>
+{
+    "username": "john_doe",
+    "email": "johndoe@example.com"
+}
+        </pre>
+        <p><strong>Description:</strong> Registers a new user.</p>
+    </div>
+
+    <div class="container">
+        <h3>5. Update Username</h3>
+        <p><strong>Method:</strong> PUT</p>
+        <p><strong>URL:</strong> <code>/users/:username</code></p>
+        <p><strong>Body:</strong></p>
+        <pre>
+{
+    "newUsername": "johnny_doe"
+}
+        </pre>
+        <p><strong>Description:</strong> Updates a user's username.</p>
+    </div>
+
+    <div class="container">
+        <h3>6. Add Favorite Movie</h3>
+        <p><strong>Method:</strong> POST</p>
+        <p><strong>URL:</strong> <code>/users/:username/favorites/:movieTitle</code></p>
+        <p><strong>Description:</strong> Adds a movie to the user's favorites.</p>
+    </div>
+
+    <div class="container">
+        <h3>7. Remove Favorite Movie</h3>
+        <p><strong>Method:</strong> DELETE</p>
+        <p><strong>URL:</strong> <code>/users/:username/favorites/:movieTitle</code></p>
+        <p><strong>Description:</strong> Removes a movie from the user's favorites.</p>
+    </div>
+
+    <div class="container">
+        <h3>8. Delete User</h3>
+        <p><strong>Method:</strong> DELETE</p>
+        <p><strong>URL:</strong> <code>/users/:username</code></p>
+        <p><strong>Description:</strong> Deletes a user account.</p>
+    </div>
+
+</body>
+</html>

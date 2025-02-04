@@ -4,12 +4,14 @@ const express = require("express"),
   uuid = require("uuid"),
   morgan = require("morgan");
 
+  const path = require('path');
+
 const app = express();
 
 // Use Morgan middleware for logging requests
 app.use(morgan("common"));
 app.use(bodyParser.json());
-
+app.use(express.static('public'));
 let movies = [
   {
 

@@ -4,7 +4,8 @@ const express = require("express"),
   morgan = require("morgan");
 const app = express();
 const mongoose = require("mongoose");
-const Models = require("./MongoDB/models.js");
+const fs = require("fs");
+const Models = require("./models.js");
 
 const path = require('path');
 const Movie = Models.Movie;
@@ -12,7 +13,14 @@ const User = Models.User;
 const Genres = Models.Genres;
 const Directors = Models.Director;
 
-mongoose.connect('mongodb://localhost:27017/MongoDB');
+mongoose.connect('mongodb://localhost:27017/MongoDB', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
+
 
 
 // Use Morgan middleware for logging requests

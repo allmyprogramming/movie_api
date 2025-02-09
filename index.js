@@ -1,208 +1,167 @@
-
 const express = require("express"),
   bodyParser = require("body-parser"),
   uuid = require("uuid"),
   morgan = require("morgan");
-
-  const path = require('path');
-
 const app = express();
+const mongoose = require("mongoose");
+const Models = require("./MongoDB/models.js");
+
+const path = require('path');
+const Movie = Models.Movie;
+const User = Models.User;
+const Genres = Models.Genres;
+const Directors = Models.Director;
+
+mongoose.connect('mongodb://localhost:27017/MongoDB');
+
 
 // Use Morgan middleware for logging requests
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(express.static('public'));
-let movies = [
-  {
-
-    Title: "Inception",
-    Description: "A thief who enters the dreams of others to steal secrets.",
-    Genre: { Name: "Sci-Fi", Description: "Science fiction movies explore futuristic concepts." },
-    Director: { Name: "Christopher Nolan", Bio: "British-American director", birthYear: 1970 },
-    ImageUrl: "https://image.url/inception.jpg",
-    Featured: true,
-  },
-  {
-
-    Title: "The Dark Knight",
-    Description: "Batman faces the Joker, who seeks to create chaos in Gotham.",
-    Genre: { Name: "Action", Description: "Action-packed movies with intense sequences." },
-    Director: { Name: "Christopher Nolan", Bio: "British-American director", birthYear: 1970 },
-    ImageUrl: "https://image.url/darkknight.jpg",
-    Featured: false,
-  },
-  {
-
-    Title: "Interstellar",
-    Description: "A team of astronauts travels through a wormhole to find a new home for humanity.",
-    Genre: { Name: "Sci-Fi", Description: "Exploring deep space and time travel." },
-    Director: { Name: "Christopher Nolan", Bio: "British-American director", birthYear: 1970 },
-    ImageUrl: "https://image.url/interstellar.jpg",
-    Featured: true,
-  },
-  {
-    Title: "The Matrix",
-    Description: "A hacker discovers the truth about his reality and fights against its controllers.",
-    Genre: { Name: "Sci-Fi", Description: "A world where reality is an illusion created by AI." },
-    Director: { Name: "Lana Wachowski", Bio: "American filmmaker and writer", birthYear: 1965 },
-    ImageUrl: "https://image.url/matrix.jpg",
-    Featured: false,
-  },
-  {
-    Title: "Pulp Fiction",
-    Description: "A series of interwoven crime stories in Los Angeles.",
-    Genre: { Name: "Crime", Description: "Stories revolving around criminal activities." },
-    Director: { Name: "Quentin Tarantino", Bio: "American filmmaker known for his unique storytelling.", birthYear: 1963 },
-    ImageUrl: "https://image.url/pulpfiction.jpg",
-    Featured: true,
-  },
-  {
-    Title: "The Lord of the Rings: The Fellowship of the Ring",
-    Description: "A hobbit embarks on a quest to destroy a powerful ring.",
-    Genre: { Name: "Fantasy", Description: "Epic adventures in magical worlds." },
-    Director: { Name: "Peter Jackson", Bio: "New Zealand filmmaker and director of the LOTR trilogy.", birthYear: 1961 },
-    ImageUrl: "https://image.url/lotr.jpg",
-    Featured: true,
-  },
-  {
-    Title: "The Godfather",
-    Description: "The powerful saga of a crime family and its patriarch.",
-    Genre: { Name: "Crime", Description: "Classic crime dramas exploring the mafia underworld." },
-    Director: { Name: "Francis Ford Coppola", Bio: "American director known for The Godfather trilogy.", birthYear: 1939 },
-    ImageUrl: "https://image.url/godfather.jpg",
-    Featured: true,
-  },
-  {
-    Title: "Forrest Gump",
-    Description: "A simple man with a big heart experiences key moments in American history.",
-    Genre: { Name: "Drama", Description: "Emotional and character-driven storytelling." },
-    Director: { Name: "Robert Zemeckis", Bio: "American filmmaker known for emotional storytelling.", birthYear: 1952 },
-    ImageUrl: "https://image.url/forrestgump.jpg",
-    Featured: true,
-  },
-  {
-    Title: "The Shawshank Redemption",
-    Description: "A man wrongly convicted of murder forms a friendship in prison.",
-    Genre: { Name: "Drama", Description: "Powerful stories of human resilience and hope." },
-    Director: { Name: "Frank Darabont", Bio: "French-American director known for prison dramas.", birthYear: 1959 },
-    ImageUrl: "https://image.url/shawshank.jpg",
-    Featured: true,
-  },
-  {
-    Title: "Fight Club",
-    Description: "An insomniac and a soap salesman start an underground fight club.",
-    Genre: { Name: "Drama", Description: "Psychological thrillers that challenge societal norms." },
-    Director: { Name: "David Fincher", Bio: "American filmmaker known for dark and stylish films.", birthYear: 1962 },
-    ImageUrl: "https://image.url/fightclub.jpg",
-    Featured: false,
-  }
-];
 
 let users = [];
 
+
+app.get("/", (req, res) => {
+  res.send("Welcome to MyMovieDATA");
+});
+
+
 // Register a new user
-app.post("/users", (req, res) => {
+app.post("/users", async (req, res) => {
   const { username, email } = req.body;
 
   if (!username || !email) {
     return res.status(400).send("Username and email are required");
   }
 
-  const newUser = {
-    id: uuid.v4(),
-    username,
-    email,
-    favoriteMovies: [],
-  };
+  try {
+    const newUser = new User({
+      username,
+      email,
+      favoriteMovies: [],
+    });
 
-  users.push(newUser);
-  res.status(201).json({ message: "User registered successfully", user: newUser });
+    await newUser.save(); // Save user to database
+    res.status(201).json({ message: "User registered successfully", user: newUser });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 });
 
 // Update username
-app.put("/users/:username", (req, res) => {
+app.put("/users/:username", async (req, res) => {
   const { username } = req.params;
   const { newUsername } = req.body;
 
-  let user = users.find((u) => u.username === username);
-
-  if (user) {
-    user.username = newUsername;
-    res.status(200).json({ message: "Username updated successfully", user });
-  } else {
-    res.status(404).send("User not found");
+  try {
+    const user = await User.findOne({ username: username });
+    if (user) {
+      user.username = newUsername;
+      await user.save(); // Save updated user to database
+      res.status(200).json({ message: "Username updated successfully", user });
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
   }
 });
 
 // Add favorite movie
-app.post("/users/:username/favorites/:movieTitle", (req, res) => {
+app.post("/users/:username/favorites/:movieTitle", async (req, res) => {
   const { username, movieTitle } = req.params;
-  let user = users.find((u) => u.username === username);
-  let movie = movies.find((m) => m.Title === movieTitle);
+  try {
+    const user = await User.findOne({ username: username });
+    const movie = await Movie.findOne({ Title: movieTitle });
 
-  if (user && movie) {
-    if (!user.favoriteMovies.includes(movieTitle)) {
-      user.favoriteMovies.push(movieTitle);
+    if (user && movie) {
+      if (!user.favoriteMovies.includes(movieTitle)) {
+        user.favoriteMovies.push(movieTitle);
+        await user.save(); // Save updated user with the favorite movie
+      }
+      res.status(200).send(`${movieTitle} has been added to ${username}'s favorite movies`);
+    } else {
+      res.status(404).send("User or movie not found");
     }
-    res.status(200).send(`${movieTitle} has been added to ${username}'s favorite movies`);
-  } else {
-    res.status(404).send("User or movie not found");
+  } catch (err) {
+    res.status(500).send({ error: "Error adding favorite movie" });
   }
 });
 
 // Remove favorite movie
-app.delete("/users/:username/favorites/:movieTitle", (req, res) => {
+app.delete("/users/:username/favorites/:movieTitle", async (req, res) => {
   const { username, movieTitle } = req.params;
-  let user = users.find((u) => u.username === username);
+  try {
+    const user = await User.findOne({ username: username });
 
-  if (user) {
-    user.favoriteMovies = user.favoriteMovies.filter((title) => title !== movieTitle);
-    res.status(200).send(`${movieTitle} has been removed from ${username}'s favorite movies`);
-  } else {
-    res.status(404).send("User not found");
+    if (user) {
+      user.favoriteMovies = user.favoriteMovies.filter((title) => title !== movieTitle);
+      await user.save(); // Save updated user with removed favorite movie
+      res.status(200).send(`${movieTitle} has been removed from ${username}'s favorite movies`);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res.status(500).send({ error: "Error removing favorite movie" });
   }
 });
 
 // Delete user
-app.delete("/users/:username", (req, res) => {
+app.delete("/users/:username", async (req, res) => {
   const { username } = req.params;
-  let userIndex = users.findIndex((u) => u.username === username);
-
-  if (userIndex !== -1) {
-    const removedUser = users.splice(userIndex, 1);
-    res.status(200).send(`User with email ${removedUser[0].email} has been removed`);
-  } else {
-    res.status(404).send("User not found");
+  try {
+    const user = await User.findOneAndDelete({ username: username });
+    if (user) {
+      res.status(200).send(`User with email ${user.email} has been removed`);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res.status(500).send({ error: "Error deleting user" });
   }
 });
 
 // Get all movies
-app.get("/movies", (req, res) => {
-  res.status(200).json(movies);
+app.get("/movies", async (req, res) => {
+  try {
+    const movies = await Movie.find({});
+    res.status(200).json(movies);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 });
 
 // Get movie by title
-app.get("/movies/:title", (req, res) => {
+app.get("/movies/:title", async (req, res) => {
   const { title } = req.params;
-  const movie = movies.find((m) => m.Title === title);
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(404).send("No such movie");
+  try {
+    const movie = await Movie.findOne({ Title: title });
+    if (movie) {
+      res.status(200).json(movie);
+    } else {
+      res.status(404).send("No such movie");
+    }
+  } catch (err) {
+    res.status(500).send({ error: "Error fetching the movie" });
   }
 });
 
 // Get genre by name
-app.get("/movies/genre/:genreName", (req, res) => {
+app.get("/movies/genre/:genreName", async (req, res) => {
   const { genreName } = req.params;
-  const movie = movies.find((m) => m.Genre.Name === genreName);
-
-  if (movie) {
-    res.status(200).json(movie.Genre);
-  } else {
-    res.status(404).send({ error: "Genre not found" });
+  try {
+    const movie = await Movie.findOne({ 'Genre.Name': genreName });
+    if (movie) {
+      res.status(200).json(movie.Genre);
+    } else {
+      res.status(404).send({ error: "Genre not found" });
+    }
+  } catch (err) {
+    res.status(500).send({ error: "Error fetching genre" });
   }
 });
 
+// Start server
 app.listen(8080, () => console.log("Listening on port 8080"));

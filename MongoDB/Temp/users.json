@@ -1,0 +1,4 @@
+{"_id":{"$oid":"67a3c2e9e9046b95dc4d7961"},"Name":"Bob Smith","Email":"bob.smith@example.com","Birthday":{"$date":"1985-10-23T00:00:00Z"},"FavoriteMovie":"The Dark Knight","IsActive":false}
+{"_id":{"$oid":"67a3c2e9e9046b95dc4d7962"},"Name":"Charlie Brown","Email":"charlie.brown@example.com","Birthday":{"$date":"1992-01-30T00:00:00Z"},"FavoriteMovie":"Pulp Fiction","IsActive":true}
+{"_id":{"$oid":"67a3c2e9e9046b95dc4d7963"},"Name":"Diana Lee","Email":"diana.lee@example.com","Birthday":{"$date":"1988-03-12T00:00:00Z"},"FavoriteMovie":"The Matrix","IsActive":true}
+{"_id":{"$oid":"67a3c2e9e9046b95dc4d7964"},"Name":"Eve White","Email":"eve.white@example.com","Birthday":{"$date":"1995-07-22T00:00:00Z"},"FavoriteMovie":"The Lord of the Rings: The Fellowship of the Ring","IsActive":true}

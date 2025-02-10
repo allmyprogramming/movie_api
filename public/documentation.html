@@ -17,69 +17,129 @@
         <h3>1. Get All Movies</h3>
         <p><strong>Method:</strong> GET</p>
         <p><strong>URL:</strong> <code>/movies</code></p>
-        <p><strong>Description:</strong> Returns a list of all movies.</p>
+        <p><strong>Description:</strong> Returns a list of all movies in the database.</p>
     </div>
 
     <div class="container">
         <h3>2. Get Movie by Title</h3>
         <p><strong>Method:</strong> GET</p>
         <p><strong>URL:</strong> <code>/movies/:title</code></p>
-        <p><strong>Description:</strong> Returns details of a specific movie.</p>
+        <p><strong>Description:</strong> Returns details of a specific movie by its title (e.g., "Inception").</p>
+        <p><strong>Response:</strong>
+        <pre>
+{
+    "Title": "Inception",
+    "Description": "A thief who enters the dreams of others to steal secrets from their subconscious.",
+    "Genre": {
+        "Name": "Sci-Fi",
+        "Description": "Science fiction movies explore futuristic concepts."
+    },
+    "Director": {
+        "Name": "Christopher Nolan",
+        "Bio": "British-American filmmaker known for his mind-bending films and time manipulation.",
+        "birthYear": 1970
+    },
+    "Actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
+    "ImageUrl": "https://image.url/inception.jpg",
+    "Featured": true
+}
+        </pre>
+        </p>
     </div>
 
     <div class="container">
         <h3>3. Get Genre Description</h3>
         <p><strong>Method:</strong> GET</p>
-        <p><strong>URL:</strong> <code>/movies/genre/:genreName</code></p>
-        <p><strong>Description:</strong> Returns the description of a movie genre.</p>
+        <p><strong>URL:</strong> <code>/genres/:name</code></p>
+        <p><strong>Description:</strong> Returns the description of a movie genre (e.g., "Sci-Fi").</p>
+        <p><strong>Response:</strong>
+        <pre>
+{
+    "Description": "Science fiction movies explore futuristic concepts."
+}
+        </pre>
+        </p>
     </div>
 
     <div class="container">
-        <h3>4. Register a New User</h3>
+        <h3>4. Get Director Info</h3>
+        <p><strong>Method:</strong> GET</p>
+        <p><strong>URL:</strong> <code>/directors/:name</code></p>
+        <p><strong>Description:</strong> Returns the bio and birth year (and optionally death year) of a director by their name (e.g., "Christopher Nolan").</p>
+        <p><strong>Response:</strong>
+        <pre>
+{
+    "Bio": "British-American filmmaker known for his mind-bending films and time manipulation.",
+    "BirthYear": 1970
+}
+        </pre>
+        </p>
+    </div>
+
+    <div class="container">
+        <h3>5. Register a New User</h3>
         <p><strong>Method:</strong> POST</p>
         <p><strong>URL:</strong> <code>/users</code></p>
         <p><strong>Body:</strong></p>
         <pre>
 {
-    "username": "john_doe",
-    "email": "johndoe@example.com"
+    "Name": "John Doe",
+    "Email": "johndoe@example.com",
+    "FavoriteMovie": "Inception",
+    "Birthday": "1990-01-01",
+    "IsActive": true
 }
         </pre>
-        <p><strong>Description:</strong> Registers a new user.</p>
+        <p><strong>Description:</strong> Registers a new user with their name, email, favorite movie, birthday, and active status.</p>
+        <p><strong>Response:</strong>
+        <pre>
+{
+    "message": "User registered successfully",
+    "user": {
+        "Name": "John Doe",
+        "Email": "johndoe@example.com",
+        "FavoriteMovie": "Inception",
+        "Birthday": "1990-01-01T00:00:00.000Z",
+        "IsActive": true
+    }
+}
+        </pre>
+        </p>
     </div>
 
     <div class="container">
-        <h3>5. Update Username</h3>
+        <h3>6. Update User Info (Email, Favorite Movie, etc.)</h3>
         <p><strong>Method:</strong> PUT</p>
-        <p><strong>URL:</strong> <code>/users/:username</code></p>
+        <p><strong>URL:</strong> <code>/users/:email</code></p>
         <p><strong>Body:</strong></p>
         <pre>
 {
-    "newUsername": "johnny_doe"
+    "Email": "alice.green@example.com",
+    "FavoriteMovie": "The Matrix"
 }
         </pre>
-        <p><strong>Description:</strong> Updates a user's username.</p>
+        <p><strong>Description:</strong> Updates a user's email and favorite movie.</p>
     </div>
 
     <div class="container">
-        <h3>6. Add Favorite Movie</h3>
+        <h3>7. Add Movie to Favorites</h3>
         <p><strong>Method:</strong> POST</p>
-        <p><strong>URL:</strong> <code>/users/:username/favorites/:movieTitle</code></p>
-        <p><strong>Description:</strong> Adds a movie to the user's favorites.</p>
+        <p><strong>URL:</strong> <code>/users/:email/favorites/:movieTitle</code></p>
+        <p><strong>Description:</strong> Adds a movie to the user's favorite movie list.</p>
     </div>
 
     <div class="container">
-        <h3>7. Remove Favorite Movie</h3>
+        <h3>8. Remove Movie from Favorites</h3>
         <p><strong>Method:</strong> DELETE</p>
-        <p><strong>URL:</strong> <code>/users/:username/favorites/:movieTitle</code></p>
-        <p><strong>Description:</strong> Removes a movie from the user's favorites.</p>
+        <p><strong>URL:</strong> <code>/users/:email/favorites/:movieTitle</code></p>
+        <p><strong>Description:</strong> Removes a movie from the user's favorite movie list.</p>
     </div>
 
     <div class="container">
-        <h3>8. Delete User</h3>
+        <h3>9. Delete User</h3>
         <p><strong>Method:</strong> DELETE</p>
-        <p><strong>URL:</strong> <code>/users/:username</code></p>
-        <p><strong>Description:</strong> Deletes a user account.</p>
+        <p><strong>URL:</strong> <code>/users/:email</code></p>
+        <p><strong>Description:</strong> Deletes a user by their email address.</p>
     </div>
 
 </body>

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Define the Movie schema with the specified fields
+// Define the Movie schema
 let movieSchema = mongoose.Schema({
     Title: { type: String, required: true },
     Description: { type: String, required: true },
@@ -11,26 +11,25 @@ let movieSchema = mongoose.Schema({
     Director: {
         Name: String,
         Bio: String,
-        birthYear: Number // Added birthYear for the director
+        BirthYear: Number,
     },
     Actors: [String],
-    ImageUrl: String, // Changed ImagePath to ImageUrl
-    Featured: Boolean
+    ImageUrl: String,
+    Featured: Boolean,
 });
 
-// Define the User schema with the specified fields
 let userSchema = mongoose.Schema({
-  Name: { type: String },  // Name of the user (no longer required)
-  Email: { type: String },  // Email address of the user (no longer required)
-  FavoriteMovie: { type: String },  // Movie that the user likes
-  Birthday: { type: Date },  // User's birthday
-  IsActive: { type: Boolean, default: true },  // Whether the user is active or not
-});
+    Username: { type: String, required: true, unique: true },
+    Email: { type: String, required: true, unique: true },
+    FavoriteMovie: { type: String },  // This should be a single string for a favorite movie
+    Birthday: { type: Date },
+  });
+  
 
-// Create models from the schemas
-let Movie = mongoose.model('Movie', movieSchema);
-let User = mongoose.model('User', userSchema);
+// Create models
+let Movie = mongoose.model("Movie", movieSchema);
+let User = mongoose.model("User", userSchema);
 
-// Export the models so that they can be used in other files
+// Export models
 module.exports.Movie = Movie;
 module.exports.User = User;

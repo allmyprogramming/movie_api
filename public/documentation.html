@@ -3,144 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie API Documentation</title>
+    <title>MyMovieDATA API Documentation</title>
+    <!-- Link to your external stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>MyMovieDATA API Documentation</h1>
+    <p>This API provides access to users and movies in the MyMovieDATA application. It includes routes for registering users, updating user data, managing favorite movies, and fetching movie data by title, genre, and director.</p>
 
-    <h1>Movie API Documentation</h1>
-    <p>Base URL: <code>http://localhost:8080</code></p>
+    <h2>Base URL</h2>
+    <pre>http://localhost:8080</pre>
 
-    <h2>Endpoints</h2>
+    <h2>User Routes</h2>
 
-    <div class="container">
-        <h3>1. Get All Movies</h3>
-        <p><strong>Method:</strong> GET</p>
-        <p><strong>URL:</strong> <code>/movies</code></p>
-        <p><strong>Description:</strong> Returns a list of all movies in the database.</p>
-    </div>
-
-    <div class="container">
-        <h3>2. Get Movie by Title</h3>
-        <p><strong>Method:</strong> GET</p>
-        <p><strong>URL:</strong> <code>/movies/:title</code></p>
-        <p><strong>Description:</strong> Returns details of a specific movie by its title (e.g., "Inception").</p>
-        <p><strong>Response:</strong>
+    <div class="endpoint">
+        <h3>1. Register a New User</h3>
+        <p><strong>POST</strong> /users</p>
+        <p><strong>Request Body:</strong></p>
         <pre>
 {
-    "Title": "Inception",
-    "Description": "A thief who enters the dreams of others to steal secrets from their subconscious.",
+  "username": "string",
+  "email": "string",
+  "birthday": "YYYY-MM-DD"
+}
+        </pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+{
+  "message": "User registered successfully",
+  "user": {
+    "_id": "string",
+    "Username": "string",
+    "Email": "string",
+    "Birthday": "YYYY-MM-DD"
+  }
+}
+        </pre>
+        <p><strong>Error Response:</strong></p>
+        <pre>
+{
+  "message": "Username and email are required"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>2. Get All Users</h3>
+        <p><strong>GET</strong> /users</p>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+[
+  {
+    "_id": "string",
+    "Username": "string",
+    "Email": "string",
+    "Birthday": "YYYY-MM-DD",
+    "FavoriteMovie": "string"
+  }
+]
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>3. Get User by Username</h3>
+        <p><strong>GET</strong> /users/:username</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:username</pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+{
+  "_id": "string",
+  "Username": "string",
+  "Email": "string",
+  "Birthday": "YYYY-MM-DD",
+  "FavoriteMovie": "string"
+}
+        </pre>
+        <p><strong>Error Response:</strong></p>
+        <pre>
+{
+  "message": "No such user"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>4. Update User Info</h3>
+        <p><strong>PUT</strong> /users/:username/update</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:username</pre>
+        <p><strong>Request Body:</strong></p>
+        <pre>
+{
+  "newUsername": "string",
+  "email": "string",
+  "birthday": "YYYY-MM-DD"
+}
+        </pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+{
+  "message": "User info updated",
+  "user": {
+    "_id": "string",
+    "Username": "string",
+    "Email": "string",
+    "Birthday": "YYYY-MM-DD"
+  }
+}
+        </pre>
+        <p><strong>Error Response:</strong></p>
+        <pre>
+{
+  "message": "User not found"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>5. Update User's Favorite Movie</h3>
+        <p><strong>PUT</strong> /users/:username/favoriteMovie</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:username</pre>
+        <p><strong>Request Body:</strong></p>
+        <pre>
+{
+  "favoriteMovie": "string"
+}
+        </pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+{
+  "message": "Favorite movie updated successfully",
+  "user": {
+    "_id": "string",
+    "Username": "string",
+    "Email": "string",
+    "FavoriteMovie": "string",
+    "Birthday": "YYYY-MM-DD"
+  }
+}
+        </pre>
+        <p><strong>Error Response:</strong></p>
+        <pre>
+{
+  "message": "User not found"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>6. Remove a Favorite Movie</h3>
+        <p><strong>PUT</strong> /users/:username/favorites/remove</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:username</pre>
+        <p><strong>Request Body:</strong></p>
+        <pre>
+{
+  "movieId": "string"
+}
+        </pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+{
+  "message": "Movie removed from favorites",
+  "user": {
+    "_id": "string",
+    "Username": "string",
+    "Email": "string",
+    "FavoriteMovie": "string",
+    "Birthday": "YYYY-MM-DD"
+  }
+}
+        </pre>
+        <p><strong>Error Response:</strong></p>
+        <pre>
+{
+  "message": "User not found"
+}
+        </pre>
+    </div>
+
+    <h2>Movie Routes</h2>
+
+    <div class="endpoint">
+        <h3>1. Get All Movies</h3>
+        <p><strong>GET</strong> /movies</p>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+[
+  {
+    "_id": "string",
+    "Title": "string",
+    "Description": "string",
     "Genre": {
-        "Name": "Sci-Fi",
-        "Description": "Science fiction movies explore futuristic concepts."
+      "Name": "string",
+      "Description": "string"
     },
     "Director": {
-        "Name": "Christopher Nolan",
-        "Bio": "British-American filmmaker known for his mind-bending films and time manipulation.",
-        "birthYear": 1970
+      "Name": "string",
+      "Bio": "string"
     },
-    "Actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
-    "ImageUrl": "https://image.url/inception.jpg",
-    "Featured": true
-}
+    "Actors": ["string", "string"],
+    "ImageUrl": "string",
+    "Featured": "boolean"
+  }
+]
         </pre>
-        </p>
     </div>
 
-    <div class="container">
-        <h3>3. Get Genre Description</h3>
-        <p><strong>Method:</strong> GET</p>
-        <p><strong>URL:</strong> <code>/genres/:name</code></p>
-        <p><strong>Description:</strong> Returns the description of a movie genre (e.g., "Sci-Fi").</p>
-        <p><strong>Response:</strong>
+    <div class="endpoint">
+        <h3>2. Get Movie by Title</h3>
+        <p><strong>GET</strong> /movies/:title</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:title</pre>
+        <p><strong>Success Response:</strong></p>
         <pre>
 {
-    "Description": "Science fiction movies explore futuristic concepts."
+  "_id": "string",
+  "Title": "string",
+  "Description": "string",
+  "Genre": {
+    "Name": "string",
+    "Description": "string"
+  },
+  "Director": {
+    "Name": "string",
+    "Bio": "string"
+  },
+  "Actors": ["string", "string"],
+  "ImageUrl": "string",
+  "Featured": "boolean"
 }
         </pre>
-        </p>
-    </div>
-
-    <div class="container">
-        <h3>4. Get Director Info</h3>
-        <p><strong>Method:</strong> GET</p>
-        <p><strong>URL:</strong> <code>/directors/:name</code></p>
-        <p><strong>Description:</strong> Returns the bio and birth year (and optionally death year) of a director by their name (e.g., "Christopher Nolan").</p>
-        <p><strong>Response:</strong>
+        <p><strong>Error Response:</strong></p>
         <pre>
 {
-    "Bio": "British-American filmmaker known for his mind-bending films and time manipulation.",
-    "BirthYear": 1970
+  "message": "No such movie"
 }
         </pre>
-        </p>
     </div>
 
-    <div class="container">
-        <h3>5. Register a New User</h3>
-        <p><strong>Method:</strong> POST</p>
-        <p><strong>URL:</strong> <code>/users</code></p>
-        <p><strong>Body:</strong></p>
+    <div class="endpoint">
+        <h3>3. Get Movies by Genre</h3>
+        <p><strong>GET</strong> /movies/genre/:genreName</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:genreName</pre>
+        <p><strong>Success Response:</strong></p>
+        <pre>
+[
+  {
+    "_id": "string",
+    "Title": "string",
+    "Description": "string",
+    "Genre": {
+      "Name": "string",
+      "Description": "string"
+    },
+    "Director": {
+      "Name": "string",
+      "Bio": "string"
+    },
+    "Actors": ["string", "string"],
+    "ImageUrl": "string",
+    "Featured": "boolean"
+  }
+]
+        </pre>
+        <p><strong>Error Response:</strong></p>
         <pre>
 {
-    "Name": "John Doe",
-    "Email": "johndoe@example.com",
-    "FavoriteMovie": "Inception",
-    "Birthday": "1990-01-01",
-    "IsActive": true
+  "message": "No movies found for genre: string"
 }
         </pre>
-        <p><strong>Description:</strong> Registers a new user with their name, email, favorite movie, birthday, and active status.</p>
-        <p><strong>Response:</strong>
+    </div>
+
+    <div class="endpoint">
+        <h3>4. Get Movies by Director</h3>
+        <p><strong>GET</strong> /movies/director/:directorName</p>
+        <p><strong>Path Parameters:</strong></p>
+        <pre>:directorName</pre>
+        <p><strong>Success Response:</strong></p>
         <pre>
-{
-    "message": "User registered successfully",
-    "user": {
-        "Name": "John Doe",
-        "Email": "johndoe@example.com",
-        "FavoriteMovie": "Inception",
-        "Birthday": "1990-01-01T00:00:00.000Z",
-        "IsActive": true
-    }
-}
+[
+  {
+    "_id": "string",
+    "Title": "string",
+    "Description": "string",
+    "Genre": {
+      "Name": "string",
+      "Description": "string"
+    },
+    "Director": {
+      "Name": "string",
+      "Bio": "string"
+    },
+    "Actors": ["string", "string"],
+    "ImageUrl": "string",
+    "Featured": "boolean"
+  }
+]
         </pre>
-        </p>
-    </div>
-
-    <div class="container">
-        <h3>6. Update User Info (Email, Favorite Movie, etc.)</h3>
-        <p><strong>Method:</strong> PUT</p>
-        <p><strong>URL:</strong> <code>/users/:email</code></p>
-        <p><strong>Body:</strong></p>
+        <p><strong>Error Response:</strong></p>
         <pre>
-{
-    "Email": "alice.green@example.com",
-    "FavoriteMovie": "The Matrix"
-}
-        </pre>
-        <p><strong>Description:</strong> Updates a user's email and favorite movie.</p>
-    </div>
-
-    <div class="container">
-        <h3>7. Add Movie to Favorites</h3>
-        <p><strong>Method:</strong> POST</p>
-        <p><strong>URL:</strong> <code>/users/:email/favorites/:movieTitle</code></p>
-        <p><strong>Description:</strong> Adds a movie to the user's favorite movie list.</p>
-    </div>
-
-    <div class="container">
-        <h3>8. Remove Movie from Favorites</h3>
-        <p><strong>Method:</strong> DELETE</p>
-        <p><strong>URL:</strong> <code>/users/:email/favorites/:movieTitle</code></p>
-        <p><strong>Description:</strong> Removes a movie from the user's favorite movie list.</p>
-    </div>
-
-    <div class="container">
-        <h3>9. Delete User</h3>
-        <p><strong>Method:</strong> DELETE</p>
-        <p><strong>URL:</strong> <code>/users/:email</code></p>
-        <p><strong>Description:</strong> Deletes a user by their email address.</p>
-    </div>
-
-</body>
-</html>
+            <pre>
+                {
+                  "message": "No movies found for director: string"
+                }
+                        </pre>

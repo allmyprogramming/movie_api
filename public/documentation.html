@@ -3,184 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyMovieDATA API Documentation</title>
-    <!-- Link to your external stylesheet -->
+    <title>API Documentation</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>MyMovieDATA API Documentation</h1>
-    <p>This API provides access to users and movies in the MyMovieDATA application. It includes routes for registering users, updating user data, managing favorite movies, and fetching movie data by title, genre, and director.</p>
 
-    <h2>Base URL</h2>
-    <pre>http://localhost:8080</pre>
+  <h1>MyMovieDATA API Documentation</h1>
+  <p>This API provides access to users and movies in the MyMovieDATA application. It includes routes for registering users, updating user data, managing favorite movies, and fetching movie data by title, genre, and director.</p>
+
+    <ul>
+        <li>Register a new user</li>
+        <li>Get user details</li>
+        <li>Update user information</li>
+        <li>Manage a user's favorite movies (add, remove, view)</li>
+    </ul>
 
     <h2>User Routes</h2>
 
     <div class="endpoint">
         <h3>1. Register a New User</h3>
-        <p><strong>POST</strong> /users</p>
-        <p><strong>Request Body:</strong></p>
+        <p>Endpoint: <code>POST /users</code></p>
+        <p>Registers a new user with a username, email, and optional birthday.</p>
+        <h4>Request Body:</h4>
         <pre>
 {
-  "username": "string",
-  "email": "string",
-  "birthday": "YYYY-MM-DD"
+    "username": "exampleUsername",
+    "email": "example@example.com",
+    "birthday": "1992-11-05"
 }
         </pre>
-        <p><strong>Success Response:</strong></p>
+        <h4>Response:</h4>
         <pre>
 {
-  "message": "User registered successfully",
-  "user": {
-    "_id": "string",
-    "Username": "string",
-    "Email": "string",
-    "Birthday": "YYYY-MM-DD"
-  }
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "Username and email are required"
+    "message": "User registered successfully",
+    "user": {
+        "Username": "exampleUsername",
+        "Email": "example@example.com",
+        "Birthday": "1992-11-05T00:00:00.000Z"
+    }
 }
         </pre>
     </div>
 
     <div class="endpoint">
-        <h3>2. Get All Users</h3>
-        <p><strong>GET</strong> /users</p>
-        <p><strong>Success Response:</strong></p>
+        <h3>2. Get User by Username</h3>
+        <p>Endpoint: <code>GET /users/:username</code></p>
+        <p>Retrieve a user's details by their username.</p>
+        <h4>Response:</h4>
+        <pre>
+{
+    "Username": "exampleUsername",
+    "Email": "example@example.com",
+    "FavoriteMovie": ["Interstellar", "Inception"],
+    "Birthday": "1992-11-05T00:00:00.000Z"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>3. Update User Info</h3>
+        <p>Endpoint: <code>PUT /users/:username/update</code></p>
+        <p>Update a user's information (username, email, or birthday).</p>
+        <h4>Request Body:</h4>
+        <pre>
+{
+    "newUsername": "newExampleUsername",
+    "email": "newemail@example.com",
+    "birthday": "1990-10-20"
+}
+        </pre>
+        <h4>Response:</h4>
+        <pre>
+{
+    "message": "User info updated",
+    "user": {
+        "Username": "newExampleUsername",
+        "Email": "newemail@example.com",
+        "Birthday": "1990-10-20T00:00:00.000Z"
+    }
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>4. Add Movie to Favorite Movies</h3>
+        <p>Endpoint: <code>POST /users/:username/favorites</code></p>
+        <p>Add a movie to the user's list of favorite movies.</p>
+        <h4>Request Body:</h4>
+        <pre>
+{
+    "favoriteMovie": "Pulp Fiction"
+}
+        </pre>
+        <h4>Response:</h4>
+        <pre>
+{
+    "Username": "exampleUsername",
+    "Email": "example@example.com",
+    "FavoriteMovie": ["Interstellar", "Inception", "Pulp Fiction"],
+    "Birthday": "1992-11-05T00:00:00.000Z"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>5. Remove Movie from Favorite Movies</h3>
+        <p>Endpoint: <code>DELETE /users/:username/favorites</code></p>
+        <p>Remove a movie from the user's list of favorite movies using the movie title.</p>
+        <h4>Request Body:</h4>
+        <pre>
+{
+    "favoriteMovie": "Pulp Fiction"
+}
+        </pre>
+        <h4>Response:</h4>
+        <pre>
+{
+    "Username": "exampleUsername",
+    "Email": "example@example.com",
+    "FavoriteMovie": ["Interstellar", "Inception"],
+    "Birthday": "1992-11-05T00:00:00.000Z"
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h3>6. Get User's Favorite Movies</h3>
+        <p>Endpoint: <code>GET /users/:username/favorites</code></p>
+        <p>Retrieve a user's list of favorite movies.</p>
+        <h4>Response:</h4>
         <pre>
 [
-  {
-    "_id": "string",
-    "Username": "string",
-    "Email": "string",
-    "Birthday": "YYYY-MM-DD",
-    "FavoriteMovie": "string"
-  }
+    "Interstellar",
+    "Inception"
 ]
-        </pre>
-    </div>
-
-    <div class="endpoint">
-        <h3>3. Get User by Username</h3>
-        <p><strong>GET</strong> /users/:username</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:username</pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-{
-  "_id": "string",
-  "Username": "string",
-  "Email": "string",
-  "Birthday": "YYYY-MM-DD",
-  "FavoriteMovie": "string"
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "No such user"
-}
-        </pre>
-    </div>
-
-    <div class="endpoint">
-        <h3>4. Update User Info</h3>
-        <p><strong>PUT</strong> /users/:username/update</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:username</pre>
-        <p><strong>Request Body:</strong></p>
-        <pre>
-{
-  "newUsername": "string",
-  "email": "string",
-  "birthday": "YYYY-MM-DD"
-}
-        </pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-{
-  "message": "User info updated",
-  "user": {
-    "_id": "string",
-    "Username": "string",
-    "Email": "string",
-    "Birthday": "YYYY-MM-DD"
-  }
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "User not found"
-}
-        </pre>
-    </div>
-
-    <div class="endpoint">
-        <h3>5. Update User's Favorite Movie</h3>
-        <p><strong>PUT</strong> /users/:username/favoriteMovie</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:username</pre>
-        <p><strong>Request Body:</strong></p>
-        <pre>
-{
-  "favoriteMovie": "string"
-}
-        </pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-{
-  "message": "Favorite movie updated successfully",
-  "user": {
-    "_id": "string",
-    "Username": "string",
-    "Email": "string",
-    "FavoriteMovie": "string",
-    "Birthday": "YYYY-MM-DD"
-  }
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "User not found"
-}
-        </pre>
-    </div>
-
-    <div class="endpoint">
-        <h3>6. Remove a Favorite Movie</h3>
-        <p><strong>PUT</strong> /users/:username/favorites/remove</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:username</pre>
-        <p><strong>Request Body:</strong></p>
-        <pre>
-{
-  "movieId": "string"
-}
-        </pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-{
-  "message": "Movie removed from favorites",
-  "user": {
-    "_id": "string",
-    "Username": "string",
-    "Email": "string",
-    "FavoriteMovie": "string",
-    "Birthday": "YYYY-MM-DD"
-  }
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "User not found"
-}
         </pre>
     </div>
 
@@ -188,126 +144,66 @@
 
     <div class="endpoint">
         <h3>1. Get All Movies</h3>
-        <p><strong>GET</strong> /movies</p>
-        <p><strong>Success Response:</strong></p>
+        <p>Endpoint: <code>GET /movies</code></p>
+        <p>Retrieve all movies in the database.</p>
+        <h4>Response:</h4>
         <pre>
 [
-  {
-    "_id": "string",
-    "Title": "string",
-    "Description": "string",
-    "Genre": {
-      "Name": "string",
-      "Description": "string"
+    {
+        "Title": "Pulp Fiction",
+        "Description": "A series of interwoven crime stories in Los Angeles.",
+        "Genre": {
+            "Name": "Crime",
+            "Description": "Stories revolving around criminal activities."
+        },
+        "Director": {
+            "Name": "Quentin Tarantino",
+            "Bio": "American filmmaker known for his unique storytelling.",
+            "BirthYear": 1963
+        },
+        "Actors": ["John Travolta", "Samuel L. Jackson"],
+        "ImageUrl": "https://image.url/pulpfiction.jpg",
+        "Featured": true
     },
-    "Director": {
-      "Name": "string",
-      "Bio": "string"
-    },
-    "Actors": ["string", "string"],
-    "ImageUrl": "string",
-    "Featured": "boolean"
-  }
+    ...
 ]
         </pre>
     </div>
 
     <div class="endpoint">
         <h3>2. Get Movie by Title</h3>
-        <p><strong>GET</strong> /movies/:title</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:title</pre>
-        <p><strong>Success Response:</strong></p>
+        <p>Endpoint: <code>GET /movies/:title</code></p>
+        <p>Retrieve a movie's details by title.</p>
+        <h4>Response:</h4>
         <pre>
 {
-  "_id": "string",
-  "Title": "string",
-  "Description": "string",
-  "Genre": {
-    "Name": "string",
-    "Description": "string"
-  },
-  "Director": {
-    "Name": "string",
-    "Bio": "string"
-  },
-  "Actors": ["string", "string"],
-  "ImageUrl": "string",
-  "Featured": "boolean"
-}
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "No such movie"
+    "Title": "Pulp Fiction",
+    "Description": "A series of interwoven crime stories in Los Angeles.",
+    "Genre": {
+        "Name": "Crime",
+        "Description": "Stories revolving around criminal activities."
+    },
+    "Director": {
+        "Name": "Quentin Tarantino",
+        "Bio": "American filmmaker known for his unique storytelling.",
+        "BirthYear": 1963
+    },
+    "Actors": ["John Travolta", "Samuel L. Jackson"],
+    "ImageUrl": "https://image.url/pulpfiction.jpg",
+    "Featured": true
 }
         </pre>
     </div>
 
-    <div class="endpoint">
-        <h3>3. Get Movies by Genre</h3>
-        <p><strong>GET</strong> /movies/genre/:genreName</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:genreName</pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-[
-  {
-    "_id": "string",
-    "Title": "string",
-    "Description": "string",
-    "Genre": {
-      "Name": "string",
-      "Description": "string"
-    },
-    "Director": {
-      "Name": "string",
-      "Bio": "string"
-    },
-    "Actors": ["string", "string"],
-    "ImageUrl": "string",
-    "Featured": "boolean"
-  }
-]
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-{
-  "message": "No movies found for genre: string"
-}
-        </pre>
-    </div>
+    <h2>Summary</h2>
+    <ul>
+        <li><strong>POST /users</strong>: Register a new user</li>
+        <li><strong>GET /users/:username</strong>: Get user details</li>
+        <li><strong>PUT /users/:username/update</strong>: Update user information</li>
+        <li><strong>POST /users/:username/favorites</strong>: Add a movie to the user's favorites</li>
+        <li><strong>DELETE /users/:username/favorites</strong>: Remove a movie from the user's favorites</li>
+        <li><strong>GET /users/:username/favorites</strong>: Get user's list of favorite movies</li>
+    </ul>
 
-    <div class="endpoint">
-        <h3>4. Get Movies by Director</h3>
-        <p><strong>GET</strong> /movies/director/:directorName</p>
-        <p><strong>Path Parameters:</strong></p>
-        <pre>:directorName</pre>
-        <p><strong>Success Response:</strong></p>
-        <pre>
-[
-  {
-    "_id": "string",
-    "Title": "string",
-    "Description": "string",
-    "Genre": {
-      "Name": "string",
-      "Description": "string"
-    },
-    "Director": {
-      "Name": "string",
-      "Bio": "string"
-    },
-    "Actors": ["string", "string"],
-    "ImageUrl": "string",
-    "Featured": "boolean"
-  }
-]
-        </pre>
-        <p><strong>Error Response:</strong></p>
-        <pre>
-            <pre>
-                {
-                  "message": "No movies found for director: string"
-                }
-                        </pre>
+</body>
+</html>

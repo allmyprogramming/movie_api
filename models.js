@@ -21,10 +21,10 @@ let movieSchema = mongoose.Schema({
 let userSchema = mongoose.Schema({
     Username: { type: String, required: true, unique: true },
     Email: { type: String, required: true, unique: true },
-    FavoriteMovie: { type: String },  // This should be a single string for a favorite movie
+    FavoriteMovie: [{ type: String }],  // Changed to an array of strings
     Birthday: { type: Date },
-  });
-  
+});
+
 
 // Create models
 let Movie = mongoose.model("Movie", movieSchema);

@@ -1,6 +1,7 @@
 const express = require("express"),
   bodyParser = require("body-parser"),
   morgan = require("morgan");
+  cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");

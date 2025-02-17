@@ -94,6 +94,15 @@ let generateJWTToken = (user) => {
   });
 };
 
+
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
+
+// Serve index.html for the root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 /* POST login - To get the JWT token */
 app.post("/login", [
   check('username').isLength({ min: 1 }).withMessage('Username is required'),

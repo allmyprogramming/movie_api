@@ -39,8 +39,9 @@ userSchema.methods.validatePassword = function(password) {
 };
 
 // Create models
-let Movie = mongoose.model("Movie", movieSchema);
-let User = mongoose.model("User", userSchema);
+let Movie = mongoose.model("Movie", movieSchema, "movies"); // Explicitly set collection name
+let User = mongoose.model("User", userSchema, "users"); // Explicitly set collection name
+
 
 // Export models
 module.exports.Movie = Movie;

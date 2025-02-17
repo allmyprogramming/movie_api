@@ -30,7 +30,7 @@ app.use(cors({
 const dbURI = process.env.MONGODB_URI;
 
 mongoose
-  .connect("dbURI", {
+  .connect(dbURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

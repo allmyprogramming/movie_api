@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 // Define the Movie schema
 let movieSchema = mongoose.Schema({

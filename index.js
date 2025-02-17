@@ -1,7 +1,7 @@
 const express = require("express"),
   bodyParser = require("body-parser"),
   morgan = require("morgan");
-  cors = require("cors");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
@@ -11,6 +11,21 @@ const Models = require("./models.js");
 const app = express();
 const Movie = Models.Movie;
 const User = Models.User;
+
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+
 
 // Database Connection
 mongoose

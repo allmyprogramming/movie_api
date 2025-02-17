@@ -27,8 +27,10 @@ app.use(cors({
 }));
 
 // Database Connection
+const dbURI = process.env.MONGODB_URI;
+
 mongoose
-  .connect("mongodb://localhost:27017/MovieDB", {
+  .connect("dbURI", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

@@ -7,6 +7,7 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const Models = require("./models.js");
+const { check, validationResult } = require('express-validator');
 
 const app = express();
 const Movie = Models.Movie;
@@ -16,16 +17,14 @@ let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn’t found on the list of allowed origins
       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message ), false);
+      return callback(new Error(message), false);
     }
     return callback(null, true);
   }
 }));
-
-
 
 // Database Connection
 mongoose
@@ -87,13 +86,22 @@ const jwtSecret = "your_jwt_secret"; // JWT secret key
 // Generate JWT token function
 let generateJWTToken = (user) => {
   return jwt.sign(user, jwtSecret, {
-    subject: user.Username, 
-    expiresIn: "7d", 
-    algorithm: "HS256", 
+    subject: user.Username,
+    expiresIn: "7d",
+    algorithm: "HS256",
   });
 };
+
 /* POST login - To get the JWT token */
-app.post("/login", (req, res, next) => {
+app.post("/login", [
+  check('username').isLength({ min: 1 }).withMessage('Username is required'),
+  check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   passport.authenticate("local", { session: false }, (error, user, info) => {
     if (error || !user) {
       return res.status(400).json({
@@ -112,11 +120,16 @@ app.post("/login", (req, res, next) => {
 });
 
 /* POST Register a new user */
-app.post("/users", async (req, res) => {
+app.post("/users", [
+  check('username').isLength({ min: 1 }).withMessage('Username is required'),
+  check('email').isEmail().withMessage('Please provide a valid email'),
+  check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], async (req, res) => {
   const { username, email, password, favoriteMovies, birthday } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).send("Username, email, and password are required");
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
   try {
@@ -150,8 +163,6 @@ app.post("/users", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 passport.use(
   new JwtStrategy(
@@ -199,6 +210,7 @@ app.get("/users/:username", passport.authenticate("jwt", { session: false }), as
     res.status(500).send({ error: "Error fetching the user" });
   }
 });
+
 // Get user favorites by username (No ObjectIds, just movie titles)
 app.get("/users/:username/favorites", passport.authenticate("jwt", { session: false }), async (req, res) => {
   try {
@@ -242,27 +254,20 @@ app.get("/movies/:title", passport.authenticate("jwt", { session: false }), asyn
 });
 
 // Get movies by genre (Protected)
-app.get("/movies/genre/:genreName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+app.get("/movies/genre/:genreName", [
+  check('genreName').isLength({ min: 1 }).withMessage('Genre name is required')
+], passport.authenticate("jwt", { session: false }), async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const movies = await Movie.find({ "Genre.Name": req.params.genreName });
     if (movies.length > 0) {
       res.status(200).json(movies);
     } else {
       res.status(404).send(`No movies found for genre: ${req.params.genreName}`);
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching movies by genre" });
-  }
-});
-
-app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
-  try {
-    const movies = await Movie.find({ "Director.Name": req.params.directorName });
-    
-    if (movies.length > 0) {
-      res.status(200).json(movies);
-    } else {
-      res.status(404).send(`No movies found for director: ${req.params.directorName}`);
     }
   } catch (err) {
     res.status(500).json({ error: "Error fetching movies by director" });

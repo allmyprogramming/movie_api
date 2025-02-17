@@ -92,7 +92,6 @@ let generateJWTToken = (user) => {
     algorithm: "HS256", 
   });
 };
-
 /* POST login - To get the JWT token */
 app.post("/login", (req, res, next) => {
   passport.authenticate("local", { session: false }, (error, user, info) => {
@@ -126,12 +125,14 @@ app.post("/users", async (req, res) => {
       return res.status(400).send("Username already exists");
     }
 
+    // Hash the password before saving
+    const hashedPassword = await User.hashPassword(password);
+
     const newUser = new User({
       Username: username,
       Email: email,
-      Password: password, // Plain text password
+      Password: hashedPassword, // Store the hashed password
       FavoriteMovie: favoriteMovies || [],
-      // Birthday should be added last in the object
       Birthday: birthday ? new Date(birthday) : null, // Handle optional birthday
     });
 
@@ -149,6 +150,9 @@ app.post("/users", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
 passport.use(
   new JwtStrategy(
     {

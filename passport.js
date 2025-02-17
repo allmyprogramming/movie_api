@@ -2,6 +2,7 @@ const passport = require("passport");
 const { ExtractJwt, Strategy: JwtStrategy } = require("passport-jwt");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("./models").User; 
+
 // Local strategy
 passport.use(
   new LocalStrategy(
@@ -16,8 +17,9 @@ passport.use(
           return done(null, false, { message: "Incorrect username." });
         }
 
-        
-        if (user.Password !== password) {
+        // Use the validatePassword method instead of direct comparison
+        const isValid = await user.validatePassword(password);
+        if (!isValid) {
           return done(null, false, { message: "Incorrect password." });
         }
 

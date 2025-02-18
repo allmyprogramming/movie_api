@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const Models = require("./models.js");
 const { check, validationResult } = require('express-validator');
-const bcrypt = require("bcrypt");
 const path = require("path");
 
 const app = express();

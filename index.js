@@ -1,8 +1,8 @@
 const path = require("path");
 const express = require("express");
 const bcrypt = require("bcryptjs");
-  bodyParser = require("body-parser"),
-  morgan = require("morgan");
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
@@ -243,6 +243,62 @@ app.get("/users/:username/favorites", passport.authenticate("jwt", { session: fa
   }
 });
 
+// Add a movie to the user's favorites
+app.post("/users/:username/favorites", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const user = await User.findOne({ Username: req.params.username });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const movieTitle = req.body.title;
+
+    // Check if the movie is already in the user's favorite movies list
+    if (user.FavoriteMovie.includes(movieTitle)) {
+      return res.status(400).send("This movie is already in your favorites");
+    }
+
+    // Add the movie to the favorites
+    user.FavoriteMovie.push(movieTitle);
+
+    await user.save();
+
+    res.status(200).json({ message: "Movie added to favorites", FavoriteMovie: user.FavoriteMovie });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// Delete a movie from the user's favorites
+app.delete("/users/:username/favorites", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const user = await User.findOne({ Username: req.params.username });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const movieTitle = req.body.title;
+
+    // Check if the movie is in the user's favorites
+    if (!user.FavoriteMovie.includes(movieTitle)) {
+      return res.status(404).send("Movie not found in favorites");
+    }
+
+    // Remove the movie from the favorites
+    user.FavoriteMovie.pull(movieTitle);
+
+    await user.save();
+
+    res.status(200).json({ message: "Movie removed from favorites", FavoriteMovie: user.FavoriteMovie });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // ********** MOVIE ROUTES (All Protected with JWT) **********
 
 // Get all movies (Protected)
@@ -284,6 +340,20 @@ app.get("/movies/genre/:genreName", [
       res.status(200).json(movies);
     } else {
       res.status(404).send(`No movies found for genre: ${req.params.genreName}`);
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching movies by director" });
+  }
+});
+
+app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const movies = await Movie.find({ "Director.Name": req.params.directorName });
+    
+    if (movies.length > 0) {
+      res.status(200).json(movies);
+    } else {
+      res.status(404).send(`No movies found for director: ${req.params.directorName}`);
     }
   } catch (err) {
     res.status(500).json({ error: "Error fetching movies by director" });

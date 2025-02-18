@@ -1,7 +1,7 @@
 const passport = require("passport");
 const { ExtractJwt, Strategy: JwtStrategy } = require("passport-jwt");
 const LocalStrategy = require("passport-local").Strategy;
-const User = require("./models").User; 
+const User = require("./models").User;
 
 // Local strategy
 passport.use(
@@ -32,7 +32,7 @@ passport.use(
 );
 
 // JWT strategy
-const jwtSecret = "your_jwt_secret"; // This needs to match the JWT secret used for signing tokens
+const jwtSecret = "your_jwt_secret"; // Ensure this matches the JWT secret used for signing tokens
 
 passport.use(
   new JwtStrategy(
@@ -42,11 +42,12 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        const user = await User.findById(jwt_payload.id);
+        // If you use 'Username' as the payload subject
+        const user = await User.findOne({ Username: jwt_payload.Username });
         if (!user) {
           return done(null, false, { message: "Invalid token." });
         }
-        return done(null, user);
+        return done(null, user); // User found
       } catch (err) {
         return done(err);
       }
@@ -54,8 +55,9 @@ passport.use(
   )
 );
 
+// Optional: You can remove these if you're only using JWT for stateless authentication
 passport.serializeUser((user, done) => {
-  done(null, user._id); // Store the user ID in the session
+  done(null, user._id); // Store the user ID in the session (for session-based auth)
 });
 
 passport.deserializeUser(async (id, done) => {

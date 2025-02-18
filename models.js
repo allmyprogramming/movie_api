@@ -28,20 +28,22 @@ let userSchema = mongoose.Schema({
   Birthday: { type: Date },
 });
 
-// Static method for hashing passwords
-userSchema.statics.hashPassword = function(password) {
-  return bcrypt.hashSync(password, 10); // Hash password with salt rounds
+// Static method for hashing passwords (async)
+userSchema.statics.hashPassword = async function(password) {
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds); // Async version of bcrypt hashing
+  return hashedPassword;
 };
 
-// Instance method for validating passwords
-userSchema.methods.validatePassword = function(password) {
-  return bcrypt.compareSync(password, this.Password); // Compare password with stored hash
+// Instance method for validating passwords (async)
+userSchema.methods.validatePassword = async function(password) {
+  const isMatch = await bcrypt.compare(password, this.Password); // Async version of bcrypt comparison
+  return isMatch;
 };
 
 // Create models
 let Movie = mongoose.model("Movie", movieSchema, "movies"); // Explicitly set collection name
 let User = mongoose.model("User", userSchema, "users"); // Explicitly set collection name
-
 
 // Export models
 module.exports.Movie = Movie;

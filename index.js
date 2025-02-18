@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const Models = require("./models.js");
 const { check, validationResult } = require('express-validator');
+const bcrypt = require("bcrypt");
 const path = require("path");
 
 const app = express();
@@ -44,11 +45,12 @@ app.use(bodyParser.json());
 
 // Passport setup
 const LocalStrategy = require("passport-local").Strategy;
+
 passport.use(
   new LocalStrategy(
     {
-      usernameField: "username", // Set username field for local strategy
-      passwordField: "password", // Set password field for local strategy
+      usernameField: "username",
+      passwordField: "password",
     },
     async (username, password, done) => {
       try {
@@ -57,8 +59,9 @@ passport.use(
           return done(null, false, { message: "Incorrect username." });
         }
 
-        // No password hashing, just comparing plain text
-        if (user.Password !== password) {
+        // Use bcrypt to compare the hashed password
+        const isMatch = await bcrypt.compare(password, user.Password);
+        if (!isMatch) {
           return done(null, false, { message: "Incorrect password." });
         }
 

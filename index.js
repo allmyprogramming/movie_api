@@ -16,7 +16,7 @@ const app = express();
 const Movie = Models.Movie;
 const User = Models.User;
 
-let allowedOrigins = ['https://movie-api-lvgy.onrender.com', 'http://localhost:8080'];
+let allowedOrigins = ['https://movie-api-lvgy.onrender.com'];
 
 app.use(cors({
   origin: (origin, callback) => {

@@ -290,6 +290,20 @@ app.get("/movies/genre/:genreName", [
   }
 });
 
+app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const movies = await Movie.find({ "Director.Name": req.params.directorName });
+    
+    if (movies.length > 0) {
+      res.status(200).json(movies);
+    } else {
+      res.status(404).send(`No movies found for director: ${req.params.directorName}`);
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching movies by director" });
+  }
+});
+
 
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {

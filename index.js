@@ -11,12 +11,11 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const Models = require("./models.js");
 const { check, validationResult } = require('express-validator');
 
-
 const app = express();
 const Movie = Models.Movie;
 const User = Models.User;
 
-let allowedOrigins = ['https://movie-api-lvgy.onrender.com'];
+let allowedOrigins = ['https://movie-api-lvgy.onrender.com', 'http://localhost:1234'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -98,7 +97,6 @@ let generateJWTToken = (user) => {
     algorithm: "HS256",
   });
 };
-
 
 // Serve static files from the 'public' folder
 app.use(express.static('public'));
@@ -201,6 +199,7 @@ passport.use(
     }
   )
 );
+
 // ********** USER ROUTES **********
 
 // Get all users (Protected)
@@ -270,7 +269,6 @@ app.post("/users/:username/favorites", passport.authenticate("jwt", { session: f
   }
 });
 
-
 // Delete a movie from the user's favorites
 app.delete("/users/:username/favorites", passport.authenticate("jwt", { session: false }), async (req, res) => {
   try {
@@ -298,11 +296,10 @@ app.delete("/users/:username/favorites", passport.authenticate("jwt", { session:
   }
 });
 
+// ********** MOVIE ROUTES (Open to All) **********
 
-// ********** MOVIE ROUTES (All Protected with JWT) **********
-
-// Get all movies (Protected)
-app.get("/movies", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get all movies (Open to All)
+app.get("/movies", async (req, res) => {
   try {
     const movies = await Movie.find({});
     res.status(200).json(movies);
@@ -335,33 +332,4 @@ app.get("/movies/genre/:genreName", [
   }
 
   try {
-    const movies = await Movie.find({ "Genre.Name": req.params.genreName });
-    if (movies.length > 0) {
-      res.status(200).json(movies);
-    } else {
-      res.status(404).send(`No movies found for genre: ${req.params.genreName}`);
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching movies by director" });
-  }
-});
-
-app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
-  try {
-    const movies = await Movie.find({ "Director.Name": req.params.directorName });
-    
-    if (movies.length > 0) {
-      res.status(200).json(movies);
-    } else {
-      res.status(404).send(`No movies found for director: ${req.params.directorName}`);
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching movies by director" });
-  }
-});
-
-
-const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0',() => {
- console.log('Listening on Port ' + port);
-});
+    const movies = await Movie.find({ "Genre.Name": req.params.genreN

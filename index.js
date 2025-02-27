@@ -332,4 +332,33 @@ app.get("/movies/genre/:genreName", [
   }
 
   try {
-    const movies = await Movie.find({ "Genre.Name": req.params.genreN
+    const movies = await Movie.find({ "Genre.Name": req.params.genreName });
+    if (movies.length > 0) {
+      res.status(200).json(movies);
+    } else {
+      res.status(404).send(`No movies found for genre: ${req.params.genreName}`);
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching movies by genre" });
+  }
+});
+
+// Get movies by director (Protected)
+app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const movies = await Movie.find({ "Director.Name": req.params.directorName });
+    
+    if (movies.length > 0) {
+      res.status(200).json(movies);
+    } else {
+      res.status(404).send(`No movies found for director: ${req.params.directorName}`);
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching movies by director" });
+  }
+});
+
+const port = process.env.PORT || 1234;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
+});

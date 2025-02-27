@@ -311,8 +311,8 @@ app.get("/movies", passport.authenticate("jwt", { session: false }), async (req,
   }
 });
 
-// Get movie by title (Protected)
-app.get("/movies/:title", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get movie by title temporarily unprotected)
+app.get("/movies/:title", async (req, res) => {
   try {
     const movie = await Movie.findOne({ Title: req.params.title });
     if (movie) {

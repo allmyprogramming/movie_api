@@ -298,6 +298,7 @@ app.delete("/users/:username/favorites", passport.authenticate("jwt", { session:
 
 // ********** MOVIE ROUTES (Open to All) **********
 
+
 // Get all movies (Open to All)
 app.get("/movies", async (req, res) => {
   try {
@@ -308,7 +309,7 @@ app.get("/movies", async (req, res) => {
   }
 });
 
-// Get movie by title temporarily unprotected)
+// Get a movie by title (Open to All)
 app.get("/movies/:title", async (req, res) => {
   try {
     const movie = await Movie.findOne({ Title: req.params.title });
@@ -322,15 +323,8 @@ app.get("/movies/:title", async (req, res) => {
   }
 });
 
-// Get movies by genre (Protected)
-app.get("/movies/genre/:genreName", [
-  check('genreName').isLength({ min: 1 }).withMessage('Genre name is required')
-], passport.authenticate("jwt", { session: false }), async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+// Get movies by genre (Open to All)
+app.get("/movies/genre/:genreName", async (req, res) => {
   try {
     const movies = await Movie.find({ "Genre.Name": req.params.genreName });
     if (movies.length > 0) {
@@ -343,8 +337,8 @@ app.get("/movies/genre/:genreName", [
   }
 });
 
-// Get movies by director (Protected)
-app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get movies by director (Open to All)
+app.get("/movies/director/:directorName", async (req, res) => {
   try {
     const movies = await Movie.find({ "Director.Name": req.params.directorName });
     

@@ -11,23 +11,27 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const Models = require("./models.js");
 const { check, validationResult } = require('express-validator');
 
-
 const app = express();
 const Movie = Models.Movie;
 const User = Models.User;
 
-let allowedOrigins = ['https://movie-api-lvgy.onrender.com'];
+let allowedOrigins = ['https://movie-api-lvgy.onrender.com', 'http://localhost:1234'];
 
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn’t found on the list of allowed origins
+    if (allowedOrigins.indexOf(origin) === -1) {
       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
       return callback(new Error(message), false);
     }
     return callback(null, true);
-  }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Database Connection
 const dbURI = process.env.MONGODB_URI;
@@ -98,7 +102,6 @@ let generateJWTToken = (user) => {
     algorithm: "HS256",
   });
 };
-
 
 // Serve static files from the 'public' folder
 app.use(express.static('public'));
@@ -201,6 +204,7 @@ passport.use(
     }
   )
 );
+
 // ********** USER ROUTES **********
 
 // Get all users (Protected)
@@ -270,7 +274,6 @@ app.post("/users/:username/favorites", passport.authenticate("jwt", { session: f
   }
 });
 
-
 // Delete a movie from the user's favorites
 app.delete("/users/:username/favorites", passport.authenticate("jwt", { session: false }), async (req, res) => {
   try {
@@ -298,11 +301,11 @@ app.delete("/users/:username/favorites", passport.authenticate("jwt", { session:
   }
 });
 
+// ********** MOVIE ROUTES (Open to All) **********
 
-// ********** MOVIE ROUTES (All Protected with JWT) **********
 
-// Get all movies (Protected)
-app.get("/movies", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get all movies (Open to All)
+app.get("/movies", async (req, res) => {
   try {
     const movies = await Movie.find({});
     res.status(200).json(movies);
@@ -311,8 +314,8 @@ app.get("/movies", passport.authenticate("jwt", { session: false }), async (req,
   }
 });
 
-// Get movie by title (Protected)
-app.get("/movies/:title", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get a movie by title (Open to All)
+app.get("/movies/:title", async (req, res) => {
   try {
     const movie = await Movie.findOne({ Title: req.params.title });
     if (movie) {
@@ -325,15 +328,8 @@ app.get("/movies/:title", passport.authenticate("jwt", { session: false }), asyn
   }
 });
 
-// Get movies by genre (Protected)
-app.get("/movies/genre/:genreName", [
-  check('genreName').isLength({ min: 1 }).withMessage('Genre name is required')
-], passport.authenticate("jwt", { session: false }), async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+// Get movies by genre (Open to All)
+app.get("/movies/genre/:genreName", async (req, res) => {
   try {
     const movies = await Movie.find({ "Genre.Name": req.params.genreName });
     if (movies.length > 0) {
@@ -342,11 +338,12 @@ app.get("/movies/genre/:genreName", [
       res.status(404).send(`No movies found for genre: ${req.params.genreName}`);
     }
   } catch (err) {
-    res.status(500).json({ error: "Error fetching movies by director" });
+    res.status(500).json({ error: "Error fetching movies by genre" });
   }
 });
 
-app.get("/movies/director/:directorName", passport.authenticate("jwt", { session: false }), async (req, res) => {
+// Get movies by director (Open to All)
+app.get("/movies/director/:directorName", async (req, res) => {
   try {
     const movies = await Movie.find({ "Director.Name": req.params.directorName });
     
@@ -360,8 +357,7 @@ app.get("/movies/director/:directorName", passport.authenticate("jwt", { session
   }
 });
 
-
-const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0',() => {
- console.log('Listening on Port ' + port);
+const port = process.env.PORT || 1234;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
 });
